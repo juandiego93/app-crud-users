@@ -5,6 +5,10 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const User = require('./models/user.models')
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+
+// Variables
+const JWT_SECRET = '/4bcd3f6h1jklmn0pqr2.93102715185'
 
 mongoose.connect('mongodb://localhost:27017/login-app-db', {
     useNewUrlParser: true,
@@ -46,6 +50,24 @@ app.post('/api/register', async (req, res) => {
         throw error
     }
     res.json({ ok: true })
+})
+
+app.post('/api/login', async (req, res) => {
+
+    const { username, password } = req.body
+    const user = await User.findOne({ username }).lean()
+    if (!user) return res.json({ status: 'error', error: 'Invalid User/Password' })
+    if (bcrypt.compare(password, user.password)) {
+        const token = jwt.sign(
+            {
+                id: user._id,
+                username: user.username,
+            },
+            JWT_SECRET
+        )
+        return res.json({ status: 'ok', data: token })
+    }
+    res.json({ status: 'error', error: 'Invalid User/Password' })
 })
 
 app.listen(9999, () => {

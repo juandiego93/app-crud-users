@@ -10,22 +10,22 @@
 
 <body>
     <h1>
-        Register User
+        Login
     </h1>
-    <form action="" id="reg-form">
+    <form action="" id="login-form">
         <input type="text" name="username" id="username" placeholder="Username" autocomplete="off">
         <input type="password" name="password" id="password" placeholder="Password" autocomplete="off">
         <input type="submit" value="Send form">
     </form>
     <script>
-        const form = document.getElementById('reg-form')
-        form.addEventListener('submit', registerUser)
-        async function registerUser(event) {
+        const form = document.getElementById('login-form')
+        form.addEventListener('submit', loginUser)
+        async function loginUser(event) {
             event.preventDefault()
             const username = document.getElementById('username').value
             const password = document.getElementById('password').value
 
-            const result = await fetch('/api/register', {
+            const result = await fetch('/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -34,7 +34,8 @@
             }).then(resp => resp.json())
 
             if (result.status == 'ok') {
-                alert('Success Register User')
+                console.log('Got the token: ', result.data)
+                alert('Success Login User')
             } else {
                 alert('Error:'.concat(result.error))
             }
