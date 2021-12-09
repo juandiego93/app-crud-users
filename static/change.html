@@ -10,32 +10,32 @@
 
 <body>
     <h1>
-        Register User
+        Change Password
     </h1>
-    <form action="" id="reg-form">
-        <input type="text" name="username" id="username" placeholder="Username" autocomplete="off">
+    <form action="" id="change-form">
         <input type="password" name="password" id="password" placeholder="Password" autocomplete="off">
         <input type="submit" value="Send form">
     </form>
     <script>
-        const form = document.getElementById('reg-form')
+        const form = document.getElementById('change-form')
         form.addEventListener('submit', registerUser)
         async function registerUser(event) {
             event.preventDefault()
-            const username = document.getElementById('username').value
             const password = document.getElementById('password').value
 
-            const result = await fetch('/api/register', {
+            const result = await fetch('/api/change-password', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username: username, password: password })
+                body: JSON.stringify({
+                    newPassword: password,
+                    token: localStorage.getItem('token')
+                })
             }).then(resp => resp.json())
 
             if (result.status == 'ok') {
-                alert('Success Register User')
-                localStorage.setItem('token', result.data)
+                alert('Change password success')
             } else {
                 alert('Error:'.concat(result.error))
             }

@@ -24,6 +24,7 @@ app.use('/', express.static(path.join(__dirname, 'static')))
 app.use(bodyParser.json())
 
 // Routes
+// Register
 app.post('/api/register', async (req, res) => {
 
     const { username, password: plainTextPassword } = req.body
@@ -51,7 +52,7 @@ app.post('/api/register', async (req, res) => {
     }
     res.json({ ok: true })
 })
-
+// Login
 app.post('/api/login', async (req, res) => {
 
     const { username, password } = req.body
@@ -69,7 +70,32 @@ app.post('/api/login', async (req, res) => {
     }
     res.json({ status: 'error', error: 'Invalid User/Password' })
 })
+// Change Password
+app.post('/api/change-password', async (req, res) => {
+    const { token, newPassword: plainTextPassword } = req.body
 
+    if (!plainTextPassword || typeof plainTextPassword !== 'string') {
+        return res.json({ status: 'error', error: 'Invalid Password' })
+    }
+    if (plainTextPassword.length < 5) {
+        return res.json({ status: 'error', error: 'Password too small. Should be atleast 6 chatracters ' })
+    }
+
+    try {
+        const user = jwt.verify(token, JWT_SECRET)
+        const _id = user._id
+        const password = await bcrypt.hash(plainTextPassword, 10)
+        await User.updateOne({ _id }, {
+            $set: { password }
+        })
+        res.json()
+    } catch (error) {
+
+        res.json({ statud: 'error', error: ';))' })
+    }
+})
+
+// Create an Run Server 
 app.listen(9999, () => {
     console.log('listening on 9999')
 })
